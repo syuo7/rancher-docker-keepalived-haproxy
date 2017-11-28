@@ -1,0 +1,28 @@
+version: '3'
+services:
+
+    keepalived_haproxy:
+        build:
+          context: ./haproxy
+        volumes:
+            - ./haproxy:/usr/local/etc/haproxy:ro
+            - ./haproxy/keepalived:/keepalived
+            - /var/run/docker.sock:/var/run/docker.sock
+            - /root/.docker:/root/.docker
+            - haproxy_log:/var/log/haproxy
+        environment:
+            INTERFACE: "enp0s8"
+            STATE: "MASTER"
+            VIRTUAL_ROUTER_ID: "51"
+            PRIORITY: "200"
+            VIRTUAL_IP: "192.168.1.166"
+            VIRTUAL_MASK: "24"
+        ports:
+          - "80:80"
+        command: [-f, /usr/local/etc/haproxy/haproxy.cfg]
+        restart: always
+        network_mode: host
+        privileged: true
+
+volumes:
+  haproxy_log:
